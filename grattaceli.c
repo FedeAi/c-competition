@@ -3,7 +3,7 @@
 #include "string.h"
 
 #define MAX_N 10
-int leggi_file(char fn[], int *N, int **mat, int *altezze);
+int **leggi_file(char fn[], int *N, int *altezze);
 int controllo(int **mat, int *altezze, int N);
 
 
@@ -12,23 +12,26 @@ int main(int argc, char *argv[])
     int N;
     int **mat, *altezze;
     printf("lettura");
-    leggi_file(argv[1], &N, mat, altezze);
+    mat = leggi_file(argv[1], &N, altezze);
     printf("lettura");
     printf("%d\n", controllo(mat,altezze,N));
     return 0;
 }
 
 
-int leggi_file(char *fn, int *N, int **mat, int *altezze){
+int **leggi_file(char *fn, int *N,  int *altezze){
     FILE *fp;
     int i=0,j=0;
     fp = fopen(fn, "rb");
     if(fp==NULL){
-        return 100;
+        exit(EXIT_FAILURE);
     }
+
     fread(N, sizeof(int), 1, fp);
 
-    for(i = 0; i < *N; i++) mat[i] = (int *)malloc((*N) * sizeof(int));
+    int *mat[*N];
+    for (i=0; i<*N; i++) 
+         mat[i] = (int *)malloc(*N * sizeof(int)); 
 
     altezze = malloc((*N)*4*sizeof(int));
 
@@ -43,6 +46,7 @@ int leggi_file(char *fn, int *N, int **mat, int *altezze){
         fread(&altezze[j], sizeof(int), 1, fp);
     }
     fclose(fp);
+    return mat;
 }
 
 int controllo(int **mat, int *altezze, int N){
@@ -51,7 +55,7 @@ int controllo(int **mat, int *altezze, int N){
 
     int m=0,n=0,k=0;
     for(i=0; i<N;i++){
-        int max_d = mat[i][0], max_s = mat[i][N];
+        int max_d = mat[i][0], max_s = mat[i][N-1];
         int n_vette_s = 1, n_vette_d = 1;   
    
 
@@ -86,7 +90,7 @@ int controllo(int **mat, int *altezze, int N){
                 max_d = mat[i][N-j-1];
             }
 
-            if((n_vette_s != altezze[N*3 + j]) || (n_vette_d != altezze[N*1 + j])){
+            if((n_vette_s != altezze[N*3 + j -1]) || (n_vette_d != altezze[N*1 + j -1])){
                 return 0; 
             }
         }
@@ -101,7 +105,7 @@ int controllo(int **mat, int *altezze, int N){
                 n_vette_d++;
                 max_d = mat[j][N-i-1];
             }
-            if((n_vette_s != altezze[i]) || (n_vette_d != altezze[N*2 + i])){
+            if((n_vette_s != altezze[i]) || (n_vette_d != altezze[N*2 + i -1])){
                 return 0;
             }
         }
