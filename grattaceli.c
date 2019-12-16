@@ -3,23 +3,22 @@
 #include "string.h"
 
 #define MAX_N 10
-int **leggi_file(char fn[], int *N, int *altezze);
-int controllo(int **mat, int *altezze, int N);
+void leggi_file(char fn[], int mat[MAX_N][MAX_N], int *N, int *altezze);
+int controllo(int mat[MAX_N][MAX_N], int *altezze, int N);
 
 
 int main(int argc, char *argv[])
 {
     int N;
-    int **mat, *altezze;
-    printf("lettura");
-    mat = leggi_file(argv[1], &N, altezze);
-    printf("lettura");
+    int *altezze;
+    int mat[MAX_N][MAX_N];
+    leggi_file(argv[1], mat, &N, altezze);
     printf("%d\n", controllo(mat,altezze,N));
     return 0;
 }
 
 
-int **leggi_file(char *fn, int *N,  int *altezze){
+void leggi_file(char *fn, int mat[MAX_N][MAX_N], int *N,  int *altezze){
     FILE *fp;
     int i=0,j=0;
     fp = fopen(fn, "rb");
@@ -29,13 +28,10 @@ int **leggi_file(char *fn, int *N,  int *altezze){
 
     fread(N, sizeof(int), 1, fp);
 
-    int *mat[*N];
-    for (i=0; i<*N; i++) 
-         mat[i] = (int *)malloc(*N * sizeof(int)); 
+
 
     altezze = malloc((*N)*4*sizeof(int));
 
-    printf("test");
     for(i=0; i<*N; i++){
         for(j=0; j<*N;j++){
             fread(&mat[i][j], sizeof(int), 1, fp);
@@ -46,10 +42,9 @@ int **leggi_file(char *fn, int *N,  int *altezze){
         fread(&altezze[j], sizeof(int), 1, fp);
     }
     fclose(fp);
-    return mat;
 }
 
-int controllo(int **mat, int *altezze, int N){
+int controllo(int mat[MAX_N][MAX_N], int *altezze, int N){
     
     int i=0,j=0;
 
@@ -80,7 +75,7 @@ int controllo(int **mat, int *altezze, int N){
 
        
         n_vette_s = 1, n_vette_d = 1;  
-        for(j=1; j<N; j++){
+        for(j=0; j<N; j++){
             if(mat[i][j]>max_s){
                 n_vette_s++;
                 max_s = mat[i][j];
@@ -95,8 +90,8 @@ int controllo(int **mat, int *altezze, int N){
             }
         }
 
-  
-        for(j=1; j<N; j++){
+        n_vette_s = 1, n_vette_d = 1;
+        for(j=0; j<N; j++){
             if(mat[j][i]>max_s){
                 n_vette_s++;
                 max_s = mat[j][i];
@@ -109,6 +104,7 @@ int controllo(int **mat, int *altezze, int N){
                 return 0;
             }
         }
-        return 1;
+        
     }
+    return 1;
 }
